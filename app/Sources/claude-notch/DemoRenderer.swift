@@ -75,13 +75,14 @@ enum DemoRenderer {
         NSColor.black.setFill()
         NSBezierPath(roundedRect: notchRect, xRadius: 10, yRadius: 10).fill()
 
-        // The card hangs from the notch's bottom line.
+        // The card hangs from the notch — overlap the notch bottom slightly so
+        // the black merges seamlessly (like the iPhone Dynamic Island).
         let cardW: CGFloat = 340, cardH: CGFloat = 64
-        let cardTopY = H - notchH
+        let cardTopY = H - notchH + 12
         let cardRect = NSRect(x: (W - cardW) / 2, y: cardTopY - cardH, width: cardW, height: cardH)
 
         // Entrance: scale around the top-center anchor + fade.
-        let s = CGFloat(0.2 + 0.8 * progress)
+        let s = CGFloat(0.34 + 0.66 * progress)
         ctx.saveGState()
         ctx.setAlpha(CGFloat(progress))
         ctx.translateBy(x: W / 2, y: cardTopY)

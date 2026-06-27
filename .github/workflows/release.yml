@@ -1,0 +1,71 @@
+name: release
+
+on:
+  push:
+    tags: ['v*']
+
+permissions:
+  contents: write
+
+jobs:
+  release:
+    runs-on: macos-14
+    env:
+      # Set the HOMEBREW_TAP_TOKEN repo secret (a PAT with `contents:write` on
+      # wangteng2021/homebrew-claude-notch) to auto-sync the tap. Optional.
+      HAS_TAP_TOKEN: ${{ secrets.HOMEBREW_TAP_TOKEN != '' }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Build universal binary
+        working-directory: app
+        run: swift build -c release --arch arm64 --arch x86_64
+
+      - name: Package + checksum
+        run: |
+          VERSION="${GITHUB_REF_NAME#v}"
+          BIN="app/.build/apple/Products/Release/claude-notch"
+          codesign --force --sign - "$BIN"
+          mkdir -p dist
+          cp "$BIN" dist/claude-notch
+          ( cd dist && zip -q claude-notch-macos-universal.zip claude-notch )
+          SHA="$(shasum -a 256 dist/claude-notch-macos-universal.zip | cut -d' ' -f1)"
+          {
+            echo "VERSION=$VERSION"
+            echo "SHA256=$SHA"
+          } >> "$GITHUB_ENV"
+
+      - name: Create GitHub release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh release create "$GITHUB_REF_NAME" dist/claude-notch-macos-universal.zip \
+            --title "claude-notch $GITHUB_REF_NAME" --generate-notes
+
+      - name: Update formula in this repo
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          f=Formula/claude-notch.rb
+          sed -i '' -E "s#/releases/download/v[0-9.]+/#/releases/download/${GITHUB_REF_NAME}/#" "$f"
+          sed -i '' -E "s#sha256 \".*\"#sha256 \"${SHA256}\"#" "$f"
+          sed -i '' -E "s#version \".*\"#version \"${VERSION}\"#" "$f"
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add "$f"
+          git commit -m "release: formula → ${GITHUB_REF_NAME}" || exit 0
+          git push origin HEAD:main
+
+      - name: Sync Homebrew tap
+        if: env.HAS_TAP_TOKEN == 'true'
+        env:
+          TAP_TOKEN: ${{ secrets.HOMEBREW_TAP_TOKEN }}
+        run: |
+          git clone "https://x-access-token:${TAP_TOKEN}@github.com/wangteng2021/homebrew-claude-notch.git" tap
+          cp Formula/claude-notch.rb tap/Formula/claude-notch.rb
+          cd tap
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add Formula/claude-notch.rb
+          git commit -m "claude-notch → ${GITHUB_REF_NAME}" || exit 0
+          git push

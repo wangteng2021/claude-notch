@@ -1,0 +1,24 @@
+name: ci
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  build:
+    runs-on: macos-14
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Build (release)
+        working-directory: app
+        run: swift build -c release
+
+      - name: Smoke-test the demo renderer
+        working-directory: app
+        run: |
+          .build/release/claude-notch render-demo /tmp/demo
+          test -f /tmp/demo/demo.gif
+          test -f /tmp/demo/card-permission.png
+          echo "ok: rendered demo assets"
