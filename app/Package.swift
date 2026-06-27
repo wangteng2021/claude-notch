@@ -1,4 +1,4 @@
-// swift-tools-version: 6.0
+// swift-tools-version: 5.9
 import PackageDescription
 
 let package = Package(
@@ -9,10 +9,7 @@ let package = Package(
     targets: [
         .executableTarget(
             name: "claude-notch",
-            path: "Sources/claude-notch",
-            swiftSettings: [
-                .swiftLanguageMode(.v5)
-            ]
+            path: "Sources/claude-notch"
         )
     ]
 )
