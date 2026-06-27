@@ -1,5 +1,9 @@
 # claude-notch
 
+[![ci](https://github.com/wangteng2021/claude-notch/actions/workflows/ci.yml/badge.svg)](https://github.com/wangteng2021/claude-notch/actions/workflows/ci.yml)
+[![release](https://img.shields.io/github/v/release/wangteng2021/claude-notch)](https://github.com/wangteng2021/claude-notch/releases)
+[![license](https://img.shields.io/badge/license-MIT-blue)](LICENSE)
+
 Show [Claude Code](https://claude.com/claude-code)'s prompts and waiting states
 on your MacBook's **notch** — Dynamic-Island style. When Claude needs your
 approval, asks a question, or finishes a turn, a black card drops out of the
@@ -175,12 +179,28 @@ claude-notch/
 ├── install.sh / uninstall.sh
 ```
 
+## Releasing (maintainers)
+
+Push a tag and CI does the rest — builds the universal binary, publishes a
+GitHub release, and bumps the formula:
+
+```bash
+git tag v0.1.1 && git push origin v0.1.1
+```
+
+To also auto-sync the Homebrew tap repo, add a `HOMEBREW_TAP_TOKEN` repo secret
+(a PAT with `contents:write` on `wangteng2021/homebrew-claude-notch`). Without
+it, copy `Formula/claude-notch.rb` to the tap repo manually.
+
 ## Roadmap
 
-* [ ] Prebuilt signed release so users don't need to compile
+* [x] Prebuilt universal binary release so users don't need to compile
+* [x] Homebrew tap
+* [x] ntfy phone push
+* [x] CI + tag-triggered release automation
 * [ ] Optional DynamicNotchKit backend for richer expand/collapse animation
 * [ ] Per-event customization (colors, sounds, durations) via a config file
-* [ ] Homebrew tap
+* [ ] GitHub Action to auto-sync the tap without a PAT
 
 ## License
 
