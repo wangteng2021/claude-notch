@@ -31,18 +31,17 @@ fi
 
 # --- 0b. language choice -----------------------------------------------------
 CONFIG_DIR="$HOME/Library/Application Support/ClaudeNotch"
-DEFAULT_LANG=en
-case "${LANG:-}" in zh*|*zh_CN*|*Hans*) DEFAULT_LANG=zh ;; esac
+DEFAULT_LANG=zh
 LANG_CHOICE="$DEFAULT_LANG"
 if [ -t 0 ]; then
   echo "Card language / 卡片语言:"
-  echo "  1) English"
-  echo "  2) 中文"
-  printf 'Choose 1 or 2 [default: %s]: ' "$DEFAULT_LANG"
+  echo "  1) 中文 (默认)"
+  echo "  2) English"
+  printf 'Choose 1 or 2 [default: 中文]: '
   read -r choice || choice=""
   case "$choice" in
-    1) LANG_CHOICE=en ;;
-    2) LANG_CHOICE=zh ;;
+    1) LANG_CHOICE=zh ;;
+    2) LANG_CHOICE=en ;;
   esac
 fi
 mkdir -p "$CONFIG_DIR"

@@ -22,8 +22,8 @@ struct Strings {
            let raw = object["lang"] as? String, let lang = parse(raw) {
             return Strings(lang: lang)
         }
-        let preferred = Locale.preferredLanguages.first ?? (env["LANG"] ?? "")
-        return Strings(lang: preferred.lowercased().hasPrefix("zh") ? .zh : .en)
+        // Default to Chinese when nothing is configured.
+        return Strings(lang: .zh)
     }
 
     private static func parse(_ raw: String) -> Lang? {

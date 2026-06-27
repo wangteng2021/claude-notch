@@ -75,8 +75,8 @@ Restart Claude Code and you're done.
   ```
 
   Card labels are localized; Claude Code's own English notifications are
-  best-effort translated. Override per-run with `CLAUDE_NOTCH_LANG=zh` (or `en`),
-  or leave it unset to follow your system language.
+  best-effort translated. **Default is 中文.** Override per-run with
+  `CLAUDE_NOTCH_LANG=en` (or `zh`).
 
 * **Show every tool step**, not just prompts: set `CLAUDE_NOTCH_STEPS=1` in the
   environment before launching Claude Code.
