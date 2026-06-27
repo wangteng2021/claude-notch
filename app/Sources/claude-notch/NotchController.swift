@@ -57,13 +57,13 @@ struct NotchView: View {
                     .fill(Color.black)
                     .overlay(
                         NotchShape()
-                            .stroke(accent(m.kind).opacity(0.55), lineWidth: 1)
+                            .stroke(cardAccent(m.kind).opacity(0.55), lineWidth: 1)
                     )
                     .overlay {
                         HStack(spacing: 11) {
-                            Image(systemName: symbol(m.kind))
+                            Image(systemName: cardSymbol(m.kind))
                                 .font(.system(size: 18, weight: .semibold))
-                                .foregroundStyle(accent(m.kind))
+                                .foregroundStyle(cardAccent(m.kind))
                                 .frame(width: 24)
                             VStack(alignment: .leading, spacing: 1) {
                                 Text(m.title)
@@ -96,28 +96,6 @@ struct NotchView: View {
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .top)
         .animation(.spring(response: 0.45, dampingFraction: 0.6), value: model.expanded)
-    }
-
-    private func symbol(_ kind: String) -> String {
-        switch kind {
-        case "permission": return "hand.raised.fill"
-        case "waiting":    return "ellipsis.bubble.fill"
-        case "done":       return "checkmark.circle.fill"
-        case "step":       return "gearshape.fill"
-        case "error":      return "exclamationmark.triangle.fill"
-        default:           return "sparkles"
-        }
-    }
-
-    private func accent(_ kind: String) -> Color {
-        switch kind {
-        case "permission": return Color(red: 1.0, green: 0.72, blue: 0.20)   // amber — needs you
-        case "waiting":    return Color(red: 0.40, green: 0.70, blue: 1.0)    // blue
-        case "done":       return Color(red: 0.35, green: 0.85, blue: 0.45)   // green
-        case "step":       return Color(white: 0.7)
-        case "error":      return Color(red: 1.0, green: 0.40, blue: 0.40)    // red
-        default:           return Color(red: 0.80, green: 0.65, blue: 1.0)    // lilac
-        }
     }
 }
 

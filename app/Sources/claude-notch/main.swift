@@ -42,6 +42,11 @@ case "serve":
 case "hook":
     HookForwarder.run()
 
+case "render-demo":
+    MainActor.assumeIsolated {
+        DemoRenderer.run(outDir: arguments.count >= 2 ? arguments[1] : "docs")
+    }
+
 case "send":
     let rest = Array(arguments.dropFirst())
     guard rest.count >= 2 else {

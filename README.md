@@ -8,7 +8,17 @@ notch so you notice instantly instead of leaving Claude waiting.
 > macOS only, and best on a notched MacBook (the card merges into the physical
 > notch). On non-notched displays it still shows as a pill near the top.
 
-![demo placeholder](docs/demo.gif)
+<p align="center">
+  <img src="docs/demo.gif" width="540" alt="claude-notch dropping a card from the notch">
+</p>
+
+<p align="center">
+  <img src="docs/card-permission.png" width="260" alt="permission card">
+  <img src="docs/card-done.png" width="260" alt="done card">
+</p>
+
+> The demo assets are generated headlessly with `claude-notch render-demo docs/`
+> (pure CoreGraphics — no screen recording).
 
 ---
 

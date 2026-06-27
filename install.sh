@@ -87,6 +87,9 @@ say "Building the overlay (swift build -c release)…"
 BUILT="$APP_DIR/.build/release/$BINARY_NAME"
 mkdir -p "$PLUGIN_BIN_DIR"
 cp "$BUILT" "$PLUGIN_BIN_DIR/$BINARY_NAME"
+# Copying invalidates the linker's ad-hoc code signature; re-sign so macOS
+# doesn't SIGKILL the copy.
+codesign --force --sign - "$PLUGIN_BIN_DIR/$BINARY_NAME" 2>/dev/null || true
 ok "Binary installed at plugin/bin/$BINARY_NAME"
 
 # --- 2. LaunchAgent ----------------------------------------------------------
