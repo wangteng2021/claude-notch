@@ -74,7 +74,9 @@ Restart Claude Code and you're done.
 ### Option B — Homebrew (prebuilt universal binary)
 
 ```bash
-brew install https://raw.githubusercontent.com/wangteng2021/claude-notch/main/Formula/claude-notch.rb
+brew tap wangteng2021/claude-notch
+brew trust wangteng2021/claude-notch      # Homebrew 6+ gates third-party taps
+brew install claude-notch
 brew services start claude-notch          # run the notch overlay
 ```
 
