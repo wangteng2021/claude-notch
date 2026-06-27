@@ -2,7 +2,7 @@ class ClaudeNotch < Formula
   desc "Show Claude Code prompts on the MacBook notch (Dynamic-Island style)"
   homepage "https://github.com/wangteng2021/claude-notch"
   url "https://github.com/wangteng2021/claude-notch/releases/download/v0.1.0/claude-notch-macos-universal.zip"
-  sha256 "REPLACE_WITH_RELEASE_SHA256"
+  sha256 "5ea0198d06c8e6c40c9d4497613417a4bf45c5e303d2558e86b8599a84c022ca"
   version "0.1.0"
   license "MIT"
 
