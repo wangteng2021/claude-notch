@@ -1,0 +1,10 @@
+# Swift / SPM build artifacts
+app/.build/
+.build/
+.swiftpm/
+
+# Compiled binary copied in by install.sh
+plugin/bin/
+
+# macOS
+.DS_Store

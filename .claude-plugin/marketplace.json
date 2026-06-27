@@ -1,0 +1,13 @@
+{
+  "name": "claude-notch",
+  "owner": {
+    "name": "claude-notch contributors"
+  },
+  "plugins": [
+    {
+      "name": "claude-notch",
+      "source": "./plugin",
+      "description": "Surface Claude Code's prompts and waiting states on the MacBook notch."
+    }
+  ]
+}

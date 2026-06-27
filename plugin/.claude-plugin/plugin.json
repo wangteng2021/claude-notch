@@ -1,0 +1,14 @@
+{
+  "name": "claude-notch",
+  "displayName": "Claude Notch",
+  "version": "0.1.0",
+  "description": "Surface Claude Code's prompts and waiting states on the MacBook notch, Dynamic-Island style.",
+  "author": {
+    "name": "claude-notch contributors"
+  },
+  "homepage": "https://github.com/REPLACE_ME/claude-notch",
+  "repository": "https://github.com/REPLACE_ME/claude-notch",
+  "license": "MIT",
+  "keywords": ["macos", "notch", "notifications", "dynamic-island"],
+  "hooks": "./hooks/hooks.json"
+}
