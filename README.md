@@ -67,6 +67,17 @@ Restart Claude Code and you're done.
 
 ## Configuration
 
+* **Language.** `install.sh` asks you to pick English or 中文 and writes it to
+  `~/Library/Application Support/ClaudeNotch/config.json`:
+
+  ```json
+  { "lang": "zh" }
+  ```
+
+  Card labels are localized; Claude Code's own English notifications are
+  best-effort translated. Override per-run with `CLAUDE_NOTCH_LANG=zh` (or `en`),
+  or leave it unset to follow your system language.
+
 * **Show every tool step**, not just prompts: set `CLAUDE_NOTCH_STEPS=1` in the
   environment before launching Claude Code.
 

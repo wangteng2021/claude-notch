@@ -29,6 +29,26 @@ if ! command -v swift >/dev/null 2>&1; then
   exit 1
 fi
 
+# --- 0b. language choice -----------------------------------------------------
+CONFIG_DIR="$HOME/Library/Application Support/ClaudeNotch"
+DEFAULT_LANG=en
+case "${LANG:-}" in zh*|*zh_CN*|*Hans*) DEFAULT_LANG=zh ;; esac
+LANG_CHOICE="$DEFAULT_LANG"
+if [ -t 0 ]; then
+  echo "Card language / 卡片语言:"
+  echo "  1) English"
+  echo "  2) 中文"
+  printf 'Choose 1 or 2 [default: %s]: ' "$DEFAULT_LANG"
+  read -r choice || choice=""
+  case "$choice" in
+    1) LANG_CHOICE=en ;;
+    2) LANG_CHOICE=zh ;;
+  esac
+fi
+mkdir -p "$CONFIG_DIR"
+printf '{\n  "lang": "%s"\n}\n' "$LANG_CHOICE" > "$CONFIG_DIR/config.json"
+ok "Language set to '$LANG_CHOICE' (edit $CONFIG_DIR/config.json to change)"
+
 # --- 1. build ----------------------------------------------------------------
 say "Building the overlay (swift build -c release)…"
 ( cd "$APP_DIR" && swift build -c release )
@@ -69,8 +89,14 @@ launchctl kickstart -k "gui/$(id -u)/${LAUNCH_AGENT_LABEL}" 2>/dev/null || true
 ok "Background agent running (and will start at login)"
 
 # --- 3. test card ------------------------------------------------------------
-sleep 1
-"$PLUGIN_BIN_DIR/$BINARY_NAME" ping || warn "Could not reach the agent — check Console for ${LAUNCH_AGENT_LABEL}"
+# launchd may take a moment to spin up the overlay; retry the test card briefly.
+for _ in 1 2 3 4 5 6 7 8; do
+  if "$PLUGIN_BIN_DIR/$BINARY_NAME" ping 2>/dev/null; then
+    PINGED=1; break
+  fi
+  sleep 0.5
+done
+[[ "${PINGED:-}" == 1 ]] || warn "Could not reach the agent — check Console for ${LAUNCH_AGENT_LABEL}"
 
 # --- 4. enable the plugin ----------------------------------------------------
 cat <<EOF

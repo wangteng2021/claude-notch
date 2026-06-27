@@ -15,27 +15,31 @@ enum HookForwarder {
         else { exit(0) }
 
         let event = object["hook_event_name"] as? String ?? ""
+        let strings = Strings.current()
         var message: NotchMessage?
 
         switch event {
         case "Notification":
-            let text = (object["message"] as? String) ?? "Claude needs your attention"
+            let text = (object["message"] as? String) ?? ""
             let type = (object["notification_type"] as? String) ?? ""
             let lowered = (text + " " + type).lowercased()
-            let kind = (lowered.contains("permission") || lowered.contains("approve")
-                        || lowered.contains("allow")) ? "permission" : "waiting"
-            message = NotchMessage(title: "Claude Code", body: text, kind: kind,
-                                   timeout: 12, termProgram: term)
+            let isPermission = lowered.contains("permission") || lowered.contains("approve")
+                || lowered.contains("allow")
+            message = NotchMessage(
+                title: isPermission ? strings.permissionTitle : strings.waitingTitle,
+                body: strings.notification(text, isPermission: isPermission),
+                kind: isPermission ? "permission" : "waiting",
+                timeout: 12, termProgram: term)
 
         case "Stop":
-            message = NotchMessage(title: "Claude finished", body: "Back to you →",
+            message = NotchMessage(title: strings.finishedTitle, body: strings.finishedBody,
                                    kind: "done", timeout: 6, termProgram: term)
 
         case "PreToolUse":
             // Opt-in: every tool step is noisy, so only show when explicitly enabled.
             guard env["CLAUDE_NOTCH_STEPS"] == "1" else { exit(0) }
             let tool = (object["tool_name"] as? String) ?? "tool"
-            message = NotchMessage(title: tool, body: stepDetail(object),
+            message = NotchMessage(title: strings.runningTool(tool), body: stepDetail(object),
                                    kind: "step", timeout: 4, termProgram: term)
 
         default:

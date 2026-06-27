@@ -26,3 +26,11 @@ enum SocketPath {
         try? FileManager.default.createDirectory(atPath: dir, withIntermediateDirectories: true)
     }
 }
+
+enum ConfigPath {
+    /// User settings (currently just the card language). Written by install.sh.
+    static var path: String {
+        FileManager.default.homeDirectoryForCurrentUser
+            .appendingPathComponent("Library/Application Support/ClaudeNotch/config.json").path
+    }
+}

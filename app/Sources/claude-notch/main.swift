@@ -57,8 +57,8 @@ case "send":
 
 case "ping":
     let ok = SocketClient.send(
-        NotchMessage(title: "Claude Notch", body: "It works ✨", kind: "info", timeout: 4,
-                     termProgram: ProcessInfo.processInfo.environment["TERM_PROGRAM"])
+        NotchMessage(title: "Claude Notch", body: Strings.current().testBody, kind: "info",
+                     timeout: 4, termProgram: ProcessInfo.processInfo.environment["TERM_PROGRAM"])
     )
     exit(ok ? 0 : 1)
 

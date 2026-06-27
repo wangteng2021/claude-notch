@@ -18,31 +18,26 @@ final class NotchModel: ObservableObject {
 // normal convex rounding. Drawn in SwiftUI's top-left origin (y grows downward).
 
 struct NotchShape: Shape {
-    var topCornerRadius: CGFloat = 11
-    var bottomCornerRadius: CGFloat = 20
+    var topCornerRadius: CGFloat = 16
+    var bottomCornerRadius: CGFloat = 22
 
     func path(in rect: CGRect) -> Path {
         let w = rect.width
         let h = rect.height
-        let rt = min(topCornerRadius, w / 2)
-        let rb = min(bottomCornerRadius, w / 2)
+        let rt = min(topCornerRadius, w / 2, h / 2)
+        let rb = min(bottomCornerRadius, w / 2, h / 2)
 
         var p = Path()
-        p.move(to: CGPoint(x: 0, y: 0))
-        // concave top-left ear
-        p.addQuadCurve(to: CGPoint(x: rt, y: rt), control: CGPoint(x: rt, y: 0))
-        // top edge (sits rt below the notch line)
-        p.addLine(to: CGPoint(x: w - rt, y: rt))
-        // concave top-right ear
-        p.addQuadCurve(to: CGPoint(x: w, y: 0), control: CGPoint(x: w - rt, y: 0))
-        // right side
-        p.addLine(to: CGPoint(x: w, y: h - rb))
-        // convex bottom-right
-        p.addQuadCurve(to: CGPoint(x: w - rb, y: h), control: CGPoint(x: w, y: h))
-        // bottom edge
-        p.addLine(to: CGPoint(x: rb, y: h))
-        // convex bottom-left
-        p.addQuadCurve(to: CGPoint(x: 0, y: h - rb), control: CGPoint(x: 0, y: h))
+        // A plain rounded card hanging below the notch — all corners convex.
+        p.move(to: CGPoint(x: rt, y: 0))
+        p.addLine(to: CGPoint(x: w - rt, y: 0))                 // top edge
+        p.addQuadCurve(to: CGPoint(x: w, y: rt), control: CGPoint(x: w, y: 0))        // TR
+        p.addLine(to: CGPoint(x: w, y: h - rb))                 // right side
+        p.addQuadCurve(to: CGPoint(x: w - rb, y: h), control: CGPoint(x: w, y: h))    // BR
+        p.addLine(to: CGPoint(x: rb, y: h))                     // bottom edge
+        p.addQuadCurve(to: CGPoint(x: 0, y: h - rb), control: CGPoint(x: 0, y: h))    // BL
+        p.addLine(to: CGPoint(x: 0, y: rt))                     // left side
+        p.addQuadCurve(to: CGPoint(x: rt, y: 0), control: CGPoint(x: 0, y: 0))        // TL
         p.closeSubpath()
         return p
     }
@@ -52,6 +47,7 @@ struct NotchShape: Shape {
 
 struct NotchView: View {
     @ObservedObject var model: NotchModel
+    var cardSize: CGSize
     var onTap: () -> Void
 
     var body: some View {
@@ -63,7 +59,7 @@ struct NotchView: View {
                         NotchShape()
                             .stroke(accent(m.kind).opacity(0.55), lineWidth: 1)
                     )
-                    .overlay(alignment: .top) {
+                    .overlay {
                         HStack(spacing: 11) {
                             Image(systemName: symbol(m.kind))
                                 .font(.system(size: 18, weight: .semibold))
@@ -84,18 +80,22 @@ struct NotchView: View {
                             Spacer(minLength: 0)
                         }
                         .padding(.horizontal, 16)
-                        .padding(.bottom, 12)
-                        // push content below the notch line
-                        .padding(.top, model.notchHeight + 4)
+                        .padding(.vertical, 11)
                     }
-                    .shadow(color: .black.opacity(0.45), radius: 10, y: 5)
+                    .frame(width: cardSize.width, height: cardSize.height)
+                    .shadow(color: .black.opacity(0.5), radius: 12, y: 7)
                     .contentShape(Rectangle())
                     .onTapGesture { onTap() }
-                    .transition(.scale(scale: 0.6, anchor: .top).combined(with: .opacity))
+                    .transition(.asymmetric(
+                        insertion: .scale(scale: 0.18, anchor: .top)
+                            .combined(with: .move(edge: .top))
+                            .combined(with: .opacity),
+                        removal: .scale(scale: 0.85, anchor: .top).combined(with: .opacity)
+                    ))
             }
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .top)
-        .animation(.spring(response: 0.34, dampingFraction: 0.78), value: model.expanded)
+        .animation(.spring(response: 0.45, dampingFraction: 0.6), value: model.expanded)
     }
 
     private func symbol(_ kind: String) -> String {
@@ -129,9 +129,10 @@ final class NotchController {
     private var panel: NSPanel!
     private var dismissWork: DispatchWorkItem?
 
-    // Card geometry below the notch line.
+    // Card geometry — the visible card hangs entirely below the notch.
     private let cardWidth: CGFloat = 340
-    private let cardBodyHeight: CGFloat = 58   // space below the notch for text
+    private let cardHeight: CGFloat = 64
+    private let shadowPad: CGFloat = 36   // extra window room below for shadow + bounce
 
     init() {
         buildPanel()
@@ -142,12 +143,14 @@ final class NotchController {
     }
 
     private func buildPanel() {
-        let root = NotchView(model: model) { [weak self] in self?.focusTerminal() }
+        let root = NotchView(model: model, cardSize: CGSize(width: cardWidth, height: cardHeight)) {
+            [weak self] in self?.focusTerminal()
+        }
         let hosting = NSHostingView(rootView: root)
         hosting.layer?.backgroundColor = NSColor.clear.cgColor
 
         let panel = NSPanel(
-            contentRect: NSRect(x: 0, y: 0, width: cardWidth + 40, height: 140),
+            contentRect: NSRect(x: 0, y: 0, width: cardWidth + 40, height: cardHeight + shadowPad),
             styleMask: [.borderless, .nonactivatingPanel],
             backing: .buffered,
             defer: false
@@ -172,10 +175,11 @@ final class NotchController {
         model.notchHeight = notch
 
         let w = cardWidth
-        let h = notch + cardBodyHeight
+        let h = cardHeight + shadowPad
         let x = screen.frame.midX - w / 2
-        // Top of the card flush with the notch line (top of the menu bar).
-        let y = screen.frame.maxY - h
+        // The card sits at the top of the window; the window's top edge is the
+        // notch's bottom line, so the card hangs straight out of the notch.
+        let y = screen.frame.maxY - notch - h
         panel.setFrame(NSRect(x: x, y: y, width: w, height: h), display: true)
     }
 
@@ -185,10 +189,7 @@ final class NotchController {
         model.message = message
         panel.orderFrontRegardless()
 
-        NSAnimationContext.runAnimationGroup { ctx in
-            ctx.duration = 0.18
-            panel.animator().alphaValue = 1
-        }
+        panel.alphaValue = 1   // let the SwiftUI spring carry the entrance
         model.expanded = true
 
         let work = DispatchWorkItem { [weak self] in self?.hide() }
