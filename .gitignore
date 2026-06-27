@@ -6,5 +6,8 @@ app/.build/
 # Compiled binary copied in by install.sh
 plugin/bin/
 
+# Release artifacts (uploaded to GitHub Releases, not committed)
+dist/
+
 # macOS
 .DS_Store

@@ -6,7 +6,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "\"${CLAUDE_PLUGIN_ROOT}\"/bin/claude-notch hook",
+            "command": "BIN=\"${CLAUDE_PLUGIN_ROOT}/bin/claude-notch\"; [ -x \"$BIN\" ] || BIN=claude-notch; \"$BIN\" hook",
             "timeout": 5
           }
         ]
@@ -18,7 +18,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "\"${CLAUDE_PLUGIN_ROOT}\"/bin/claude-notch hook",
+            "command": "BIN=\"${CLAUDE_PLUGIN_ROOT}/bin/claude-notch\"; [ -x \"$BIN\" ] || BIN=claude-notch; \"$BIN\" hook",
             "timeout": 5
           }
         ]
@@ -30,7 +30,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "\"${CLAUDE_PLUGIN_ROOT}\"/bin/claude-notch hook",
+            "command": "BIN=\"${CLAUDE_PLUGIN_ROOT}/bin/claude-notch\"; [ -x \"$BIN\" ] || BIN=claude-notch; \"$BIN\" hook",
             "timeout": 5
           }
         ]

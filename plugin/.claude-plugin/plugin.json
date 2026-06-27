@@ -6,8 +6,8 @@
   "author": {
     "name": "claude-notch contributors"
   },
-  "homepage": "https://github.com/REPLACE_ME/claude-notch",
-  "repository": "https://github.com/REPLACE_ME/claude-notch",
+  "homepage": "https://github.com/wangteng2021/claude-notch",
+  "repository": "https://github.com/wangteng2021/claude-notch",
   "license": "MIT",
   "keywords": ["macos", "notch", "notifications", "dynamic-island"],
   "hooks": "./hooks/hooks.json"

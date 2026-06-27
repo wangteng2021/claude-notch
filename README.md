@@ -53,8 +53,10 @@ to bring the terminal running Claude Code back to the front.
 
 ## Install
 
+### Option A — from source (recommended)
+
 ```bash
-git clone https://github.com/REPLACE_ME/claude-notch.git
+git clone https://github.com/wangteng2021/claude-notch.git
 cd claude-notch
 ./install.sh
 ```
@@ -68,6 +70,20 @@ and at every login), and fires a test card. Then, inside Claude Code:
 ```
 
 Restart Claude Code and you're done.
+
+### Option B — Homebrew (prebuilt universal binary)
+
+```bash
+brew install https://raw.githubusercontent.com/wangteng2021/claude-notch/main/Formula/claude-notch.rb
+brew services start claude-notch          # run the notch overlay
+```
+
+Then enable the plugin in Claude Code:
+
+```
+/plugin marketplace add wangteng2021/claude-notch
+/plugin install claude-notch@claude-notch
+```
 
 ### Requirements
 
