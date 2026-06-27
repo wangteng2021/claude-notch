@@ -49,17 +49,17 @@ case "send":
         exit(2)
     }
     let kind = rest.count >= 3 ? rest[2] : "info"
-    let ok = SocketClient.send(
-        NotchMessage(title: rest[0], body: rest[1], kind: kind, timeout: 6,
-                     termProgram: ProcessInfo.processInfo.environment["TERM_PROGRAM"])
-    )
+    let message = NotchMessage(title: rest[0], body: rest[1], kind: kind, timeout: 6,
+                               termProgram: ProcessInfo.processInfo.environment["TERM_PROGRAM"])
+    let ok = SocketClient.send(message)
+    NtfyClient.push(message, ignoreKindFilter: true)   // manual test → always push
     exit(ok ? 0 : 1)
 
 case "ping":
-    let ok = SocketClient.send(
-        NotchMessage(title: "Claude Notch", body: Strings.current().testBody, kind: "info",
-                     timeout: 4, termProgram: ProcessInfo.processInfo.environment["TERM_PROGRAM"])
-    )
+    let message = NotchMessage(title: "Claude Notch", body: Strings.current().testBody, kind: "info",
+                               timeout: 4, termProgram: ProcessInfo.processInfo.environment["TERM_PROGRAM"])
+    let ok = SocketClient.send(message)
+    NtfyClient.push(message, ignoreKindFilter: true)   // verify phone setup during install
     exit(ok ? 0 : 1)
 
 default:

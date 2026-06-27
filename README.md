@@ -78,6 +78,26 @@ Restart Claude Code and you're done.
   best-effort translated. **Default is 中文.** Override per-run with
   `CLAUDE_NOTCH_LANG=en` (or `zh`).
 
+* **Phone push (optional).** Get a notification on your phone too, via the free
+  open-source [ntfy.sh](https://ntfy.sh). `install.sh` asks for a topic, or add
+  it to `config.json`:
+
+  ```json
+  {
+    "lang": "zh",
+    "ntfy": {
+      "server": "https://ntfy.sh",
+      "topic": "your-secret-topic-name",
+      "kinds": ["permission", "waiting", "done", "error"]
+    }
+  }
+  ```
+
+  Install the **ntfy** app (iOS/Android) and subscribe to the same topic. Use a
+  long, hard-to-guess topic name — anyone who knows it can read your pushes.
+  Only `kinds` listed are pushed (default skips the noisy per-tool steps).
+  Override per-run with `CLAUDE_NOTCH_NTFY_TOPIC`.
+
 * **Show every tool step**, not just prompts: set `CLAUDE_NOTCH_STEPS=1` in the
   environment before launching Claude Code.
 
@@ -115,6 +135,8 @@ claude-notch/
 │       ├── NotchController.swift  the Dynamic-Island window + shape + view
 │       ├── Socket.swift       Unix-domain-socket server & client
 │       ├── HookForwarder.swift maps Claude Code hook JSON → a card
+│       ├── NtfyClient.swift     optional phone push via ntfy.sh
+│       ├── Localization.swift   en / zh card text
 │       ├── AppDelegate.swift
 │       └── Message.swift
 ├── plugin/                    the Claude Code plugin

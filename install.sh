@@ -45,8 +45,41 @@ if [ -t 0 ]; then
   esac
 fi
 mkdir -p "$CONFIG_DIR"
-printf '{\n  "lang": "%s"\n}\n' "$LANG_CHOICE" > "$CONFIG_DIR/config.json"
-ok "Language set to '$LANG_CHOICE' (edit $CONFIG_DIR/config.json to change)"
+
+# Optional phone push via ntfy.sh
+NTFY_TOPIC=""
+NTFY_SERVER="https://ntfy.sh"
+if [ -t 0 ]; then
+  SUGGESTED="claude-notch-$(openssl rand -hex 5 2>/dev/null || echo $RANDOM$RANDOM)"
+  echo
+  echo "Phone push via ntfy.sh (optional) / 手机推送（可选）:"
+  echo "  Install the free 'ntfy' app (iOS/Android) and subscribe to a topic to"
+  echo "  get a push when Claude needs you. Leave blank to skip."
+  printf 'ntfy topic [suggested: %s]: ' "$SUGGESTED"
+  read -r NTFY_TOPIC || NTFY_TOPIC=""
+fi
+
+if [ -n "$NTFY_TOPIC" ]; then
+  cat > "$CONFIG_DIR/config.json" <<JSON
+{
+  "lang": "$LANG_CHOICE",
+  "ntfy": {
+    "server": "$NTFY_SERVER",
+    "topic": "$NTFY_TOPIC"
+  }
+}
+JSON
+  ok "Language '$LANG_CHOICE'; phone push → topic '$NTFY_TOPIC'"
+  warn "Subscribe to topic '$NTFY_TOPIC' in the ntfy app to receive pushes."
+else
+  cat > "$CONFIG_DIR/config.json" <<JSON
+{
+  "lang": "$LANG_CHOICE"
+}
+JSON
+  ok "Language set to '$LANG_CHOICE' (no phone push)"
+fi
+echo "Edit $CONFIG_DIR/config.json anytime to change."
 
 # --- 1. build ----------------------------------------------------------------
 say "Building the overlay (swift build -c release)…"

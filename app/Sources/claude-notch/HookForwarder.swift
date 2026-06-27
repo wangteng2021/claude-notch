@@ -46,7 +46,10 @@ enum HookForwarder {
             exit(0)
         }
 
-        if let message { _ = SocketClient.send(message) }
+        if let message {
+            _ = SocketClient.send(message)   // Mac notch card
+            NtfyClient.push(message)          // optional phone push
+        }
         exit(0)
     }
 
